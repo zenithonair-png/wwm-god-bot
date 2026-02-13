@@ -1,17 +1,19 @@
-import os
 from fastapi import FastAPI, Request
 from telegram import Update
-from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
-
-BOT_TOKEN = os.getenv("BOT_TOKEN")
+from telegram.ext import (
+    ApplicationBuilder,
+    CommandHandler,
+    CallbackQueryHandler,
+)
+from config import BOT_TOKEN
+from handlers.start import start
+from handlers.menu import menu_handler
 
 app = FastAPI()
 telegram_app = ApplicationBuilder().token(BOT_TOKEN).build()
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("WWM Creator Bot Online")
-
 telegram_app.add_handler(CommandHandler("start", start))
+telegram_app.add_handler(CallbackQueryHandler(menu_handler))
 
 @app.on_event("startup")
 async def startup():
